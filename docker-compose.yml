@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  checkov:
+    image: bridgecrew/checkov:latest
+    working_dir: /repo
+    volumes:
+      - ./:/repo:ro
+      - ./artifacts:/artifacts
+    command: >-
+      bash -lc "mkdir -p /artifacts && checkov -d . --output json --output-file-path /artifacts/checkov_report.json"
+  streamlit:
+    build: .
+    environment:
+      CHECKOV_REPORT_PATH: /app/artifacts/checkov_report.json
+      OPENAI_API_KEY: ${OPENAI_API_KEY-}
+    volumes:
+      - ./artifacts:/app/artifacts
+    ports:
+      - "8501:8501"
+    depends_on:
+      - checkov
