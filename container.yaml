@@ -1,0 +1,32 @@
+# Container orchestration recipe for running a Checkov scan followed by the Streamlit remediation assistant.
+
+services:
+  - name: checkov-scan
+    image: bridgecrew/checkov:latest
+    working_dir: /repo
+    mounts:
+      - source: .
+        target: /repo
+        read_only: true
+      - source: ./artifacts
+        target: /artifacts
+    command:
+      - bash
+      - -lc
+      - |
+        mkdir -p /artifacts
+        checkov -d . --output json --output-file-path /artifacts/checkov_report.json
+
+  - name: llm-streamlit
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env:
+      CHECKOV_REPORT_PATH: /app/artifacts/checkov_report.json
+    mounts:
+      - source: ./artifacts
+        target: /app/artifacts
+    ports:
+      - "8501:8501"
+    depends_on:
+      - checkov-scan

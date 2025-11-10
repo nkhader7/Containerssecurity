@@ -1,0 +1,15 @@
+{
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_20",
+        "check_name": "Ensure S3 bucket has versioning enabled",
+        "resource": "aws_s3_bucket.example",
+        "file_path": "iac/main.tf",
+        "guideline": "https://docs.bridgecrew.io/docs/s3_16-enable-versioning",
+        "description": "S3 bucket versioning protects against unintended object deletion.",
+        "code_block": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"my-bucket\"\n}\n"
+      }
+    ]
+  }
+}
